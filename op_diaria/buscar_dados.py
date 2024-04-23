@@ -26,7 +26,7 @@ for usina_id in ids:
         # Obtém o valor de "totalGerado"
         total_gerado = data.get('totalGerado')
 
-    nome_ult = ult.get(usina_id, "Nome não encontrado")
+    nome_ult = ult.get(usina_id, "Nome não encontrado ")
 
     df_usina = pd.DataFrame(
         {

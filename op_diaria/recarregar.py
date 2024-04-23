@@ -13,7 +13,7 @@ for usina_id in ids:
         if resposta.status_code == 200:
             # Processar os dados da resposta
             dados = resposta.json()
-            print("Carregamento concluído!")
+            print("Carregamento concluído! ")
             break  # Se os dados foram carregados com sucesso, saia do loop
         else:
             print(f"Tentativa {tentativa + 1}: Falha ao carregar os dados. Tentando novamente...")

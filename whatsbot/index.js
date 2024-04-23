@@ -68,7 +68,7 @@ function start(client) {
 
             })
             .catch((error) => {
-                console.error('Erro ao enviar mensagem:', error);
+                console.error('Erro ao enviar mensagem :', error);
                 socket.end(); // Encerra a conexão após enviar a mensagem
 
             });

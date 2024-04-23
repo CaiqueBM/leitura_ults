@@ -18662,3 +18662,6 @@ whatsbot/tokens/session-name/Default/VideoDecodeStats/LOCK
 whatsbot/tokens/session-name/Default/VideoDecodeStats/LOG
 whatsbot/tokens/session-name/Default/WebStorage/QuotaManager
 whatsbot/tokens/session-name/Default/WebStorage/QuotaManager-journal
+numeros.txt
+op_diaria/__pycache__/run.cpython-311.pyc
+teste.py

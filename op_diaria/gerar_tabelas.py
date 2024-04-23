@@ -17,6 +17,5 @@ c.execute(
 )
 
 conn.commit()
-
 # Fechar a conexão
 conn.close()
