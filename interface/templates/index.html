@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <label for="start_date">Data Inicial:</label>
+    <input type="date" id="start_date">
+    
+    <label for="end_date">Data Final:</label>
+    <input type="date" id="end_date">
+    
+    <label for="ult_type">Tipo de ULT:</label>
+    <select id="ult_type">
+        <option value="ULT 1">ULT 1</option>
+        <option value="ULT 2">ULT 2</option>
+        <option value="ULT 3">ULT 3</option>
+        <option value="ULT 4">ULT 4</option>
+    </select>
+
+    <canvas id="myChart"></canvas>
+
+    <script>
+        // Configurações do gráfico
+        const config = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Ult',
+                    data: [],
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {}
+        };
+
+        // Gerar o gráfico
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, config);
+
+        // Função para atualizar o gráfico com base nas seleções do usuário
+        async function updateChart() {
+            // Obter os valores selecionados
+            const startDate = document.getElementById('start_date').value;
+            const endDate = document.getElementById('end_date').value;
+            const ultType = document.getElementById('ult_type').value;
+
+            // Fazer solicitação AJAX para o servidor
+            fetch(`/data?start_date=${startDate}&end_date=${endDate}&ult_type=${ultType}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Atualizar o gráfico com os novos dados
+                    updateChartData(data);
+                })
+                .catch(error => {
+                    console.error('Erro ao obter dados:', error);
+                });
+        }
+
+        // Função para atualizar os dados do gráfico com base nos dados obtidos
+        function updateChartData(data) {
+            const labels = data.map(item => item.data);
+            const ultData = data.map(item => item.geracao);
+
+            myChart.data.labels = labels;
+            myChart.data.datasets[0].data = ultData;
+            myChart.update();
+        }
+
+        // Adicionar eventos de mudança aos elementos de entrada
+        document.getElementById('start_date').addEventListener('change', updateChart);
+        document.getElementById('end_date').addEventListener('change', updateChart);
+        document.getElementById('ult_type').addEventListener('change', updateChart);
+
+        // Atualizar o gráfico inicialmente ao carregar a página
+        updateChart();
+    </script>
+
+<button id="download_pdf">Download PDF da Tabela</button>
+
+    <script>
+        // Adicione um evento de clique ao botão de download
+        document.getElementById('download_pdf').addEventListener('click', function() {
+            // Obter os valores selecionados
+            const startDate = document.getElementById('start_date').value;
+            const endDate = document.getElementById('end_date').value;
+            const ultType = document.getElementById('ult_type').value;
+
+            // Redirecionar para a rota /ult_pdf com os parâmetros
+            window.location.href = `/ult_pdf?start_date=${startDate}&end_date=${endDate}&ult_type=${ultType}`;
+        });
+    </script>
+    
+</body>
+</html>
