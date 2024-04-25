@@ -8,9 +8,6 @@ data_atual = datetime.now()
 data_anterior = data_atual - timedelta(days=1)
 data_anterior = data_anterior.strftime("%Y-%m-%d")
 
-"""ids = [578496, 667618]
-ult = {578496: "ULT 1", 667618: "ULT 3"}"""
-
 ids = [578496, 667618, 686932, 767468]
 ult = {578496: "ULT 1", 667618: "ULT 3", 686932: "ULT 4", 767468: "ULT 2"}
 
@@ -41,22 +38,43 @@ for usina_id in ids:
 
     dfdados = pd.concat([dfdados, df_usina], ignore_index=True)
 
+
+#Buscar os dados de estimativa
+from estimativa import estimar
+
+estimativas = estimar()
+
+
+data_formatada = datetime.strptime(data_anterior, '%Y-%m-%d').strftime('%d/%m/%Y')
+
 mensagem = (
-    f"*GERAÇÃO TOTAL DIÁRIA:* \n"
-    f"◉ "
-    f"*{dfdados.loc[dfdados['ULT'] == 'ULT 1', 'ULT'].iloc[0]}:* {dfdados.loc[dfdados['ULT'] == 'ULT 1', 'GERACAO'].iloc[0]} kWh \n"
-    f"◉ "
-    f"*{dfdados.loc[dfdados['ULT'] == 'ULT 2', 'ULT'].iloc[0]}:* {dfdados.loc[dfdados['ULT'] == 'ULT 2', 'GERACAO'].iloc[0]} kWh \n"
-    f"◉ "
-    f"*{dfdados.loc[dfdados['ULT'] == 'ULT 3', 'ULT'].iloc[0]}:* {dfdados.loc[dfdados['ULT'] == 'ULT 3', 'GERACAO'].iloc[0]} kWh \n"
-    f"◉ "
-    f"*{dfdados.loc[dfdados['ULT'] == 'ULT 4', 'ULT'].iloc[0]}:* {dfdados.loc[dfdados['ULT'] == 'ULT 4', 'GERACAO'].iloc[0]} kWh"
+    f"*GERAÇÃO ULT:* \n\n"
+    f"*DATA:* {data_formatada} \n\n"
+    f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 1', 'ULT'].iloc[0]}:*\n"
+    f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 1', 'GERACAO'].iloc[0]} kWh \n"
+    f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 1']} kWh\n"
+    f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 1']} kWh\n\n"
+    f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 2', 'ULT'].iloc[0]}:*\n"
+    f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 2', 'GERACAO'].iloc[0]} kWh \n"
+    f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 2']} kWh\n"
+    f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 2']} kWh\n\n"
+    f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 3', 'ULT'].iloc[0]}:*\n"
+    f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 3', 'GERACAO'].iloc[0]} kWh \n"
+    f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 3']} kWh\n"
+    f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 3']} kWh\n\n"
+    f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 4', 'ULT'].iloc[0]}:*\n"
+    f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 4', 'GERACAO'].iloc[0]} kWh \n"
+    f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 4']} kWh\n"
+    f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 4']} kWh\n\n"
+
 )
 
 print(mensagem)
 
+
 # Conectar ao banco de dados e salvar o DataFrame
-conn = sqlite3.connect("dados.db")
+caminhoDB = f"/home/abs/Aplicativos/leitura_ults/dados.db"
+conn = sqlite3.connect(caminhoDB)
 dfdados.to_sql(
     "dados_diarios", conn, index=False, if_exists="append"
 )  # Use "replace" se desejar substituir a tabela existente
@@ -65,7 +83,7 @@ conn.close()
 #Envio de mensagens para o whatsapp
 from run import enviar_mensagem
 
-with open('/home/caique/Documentos/leitura_ults/numeros.txt', 'r') as arquivo:
+with open('/home/abs/Aplicativos/leitura_ults/numeros.txt', 'r') as arquivo:
     linhas = arquivo.readlines()
 
 for linha in linhas:

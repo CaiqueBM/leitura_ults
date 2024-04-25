@@ -1,7 +1,9 @@
 import sqlite3
 
+caminhoDB = f"/home/abs/Aplicativos/leitura_ults/dados.db"
+
 # Conexão com o banco de dados
-conn = sqlite3.connect("dados.db")
+conn = sqlite3.connect(caminhoDB)
 c = conn.cursor()
 
 # Cria as tabelas se não existirem

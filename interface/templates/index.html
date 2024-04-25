@@ -5,40 +5,145 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chart Demo</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Estilos para centralizar o contêiner do h2 */
+        .title-container {
+            text-align: center; /* Centraliza o conteúdo horizontalmente */
+            margin-bottom: 20px; /* Adiciona um espaço extra abaixo do título */
+        }
+        
+        /* Estilos para o contêiner dos filtros */
+        .filters-container {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 10px; /* Ajuste o posicionamento horizontal conforme necessário */
+            width: 30%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        
+        /* Estilos para o contêiner do gráfico */
+        .chart-container {
+            float: right;
+            width: 80%; /* Reduzindo um pouco a largura para dar mais espaço aos filtros */
+            padding: 0 10px;
+            margin-left: -10%; /* Adicionando margem à esquerda para separar o gráfico dos filtros */
+            box-sizing: border-box;
+        }
+        
+        /* Estilos para o canvas do gráfico */
+        #myChart {
+            width: 100%;
+            height: 500px;
+        }
+        
+        /* Estilos para os elementos dentro do contêiner dos filtros */
+        .filters-container label,
+        .filters-container input,
+        .filters-container select,
+        .filters-container button,
+        .filters-container p {
+            display: block;
+            margin-bottom: 10px;
+            font-family: Arial, sans-serif; /* Define a fonte */
+            font-size: 16px; /* Define o tamanho da fonte */
+            color: #333; /* Define a cor do texto */
+        }
+        
+        /* Estilos para os botões */
+        .filters-container button {
+            padding: 10px 20px; /* Adiciona espaço interno */
+            background-color: #4CAF50; /* Define a cor de fundo */
+            color: white; /* Define a cor do texto */
+            border: none; /* Remove a borda */
+            border-radius: 5px; /* Adiciona bordas arredondadas */
+            cursor: pointer; /* Altera o cursor ao passar por cima */
+        }
+        
+        /* Estilos para os botões quando passa o mouse */
+        .filters-container button:hover {
+            background-color: #45a049; /* Altera a cor de fundo ao passar o mouse */
+        }
+    </style>
 </head>
 <body>
-    <label for="start_date">Data Inicial:</label>
-    <input type="date" id="start_date">
+    <div class="title-container">
+        <h2>GERAÇÃO ULT</h2>
+    </div>
     
-    <label for="end_date">Data Final:</label>
-    <input type="date" id="end_date">
-    
-    <label for="ult_type">Tipo de ULT:</label>
-    <select id="ult_type">
-        <option value="ULT 1">ULT 1</option>
-        <option value="ULT 2">ULT 2</option>
-        <option value="ULT 3">ULT 3</option>
-        <option value="ULT 4">ULT 4</option>
-    </select>
+    <div class="filters-container">
+        <label for="start_date">Data Inicial:</label>
+        <input type="date" id="start_date">
+        
+        <label for="end_date">Data Final:</label>
+        <input type="date" id="end_date">
+        
+        <label for="ult_type">Tipo de ULT:</label>
+        <select id="ult_type">
+            <option value="ULT 1">ULT 1</option>
+            <option value="ULT 2">ULT 2</option>
+            <option value="ULT 3">ULT 3</option>
+            <option value="ULT 4">ULT 4</option>
+        </select>
 
-    <canvas id="myChart"></canvas>
+        <p id="total_geracao"></p>
+        <p id="media_geracao"></p>
+
+        <button id="download_pdf">Download PDF da Tabela</button>
+    </div>
+    
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <div style="clear:both;"></div>
 
     <script>
+        // Função para calcular e exibir a soma dos valores de geração
+        function calcularSomaEMedia(data) {
+            const geracao = data.map(item => item.geracao);
+            const totalGeração = geracao.reduce((acc, curr) => acc + curr, 0);
+            const mediaGeração = (totalGeração / geracao.length).toFixed(2); // Calcula a média corretamente
+
+        document.getElementById('total_geracao').innerText = `Total de Geração: ${totalGeração.toFixed(2)} kWh`;
+        document.getElementById('media_geracao').innerText = `Média de Geração: ${mediaGeração} kWh`;
+
+        // Calcula a média de cada ponto de dados e adiciona uma linha de média ao gráfico
+        const mediaGeraçãoArray = Array.from({ length: data.length }, () => parseFloat(mediaGeração));
+        const mediaDataset = {
+            label: 'Média de Geração',
+            data: mediaGeraçãoArray,
+            fill: false,
+            borderColor: 'red',
+            borderWidth: 1,
+            borderDash: [5, 5], // Adiciona uma linha tracejada
+            pointRadius: 0 // Remove os pontos de dados
+    };
+    myChart.data.datasets.push(mediaDataset);
+        }
+        
+        
         // Configurações do gráfico
-        const config = {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Ult',
-                    data: [],
-                    fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
-            },
-            options: {}
-        };
+        // Configurações do gráfico
+const config = {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Ult',
+            data: [],
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        legend: {
+            display: true
+        }
+    }
+};
 
         // Gerar o gráfico
         const ctx = document.getElementById('myChart').getContext('2d');
@@ -70,6 +175,11 @@
 
             myChart.data.labels = labels;
             myChart.data.datasets[0].data = ultData;
+            // Limpar os dados existentes para garantir que não haja duplicatas de linhas de média
+            myChart.data.datasets = myChart.data.datasets.filter(dataset => dataset.label !== 'Média de Geração');
+            
+
+            calcularSomaEMedia(data);
             myChart.update();
         }
 
@@ -81,8 +191,6 @@
         // Atualizar o gráfico inicialmente ao carregar a página
         updateChart();
     </script>
-
-<button id="download_pdf">Download PDF da Tabela</button>
 
     <script>
         // Adicione um evento de clique ao botão de download
@@ -96,6 +204,6 @@
             window.location.href = `/ult_pdf?start_date=${startDate}&end_date=${endDate}&ult_type=${ultType}`;
         });
     </script>
-    
+
 </body>
 </html>

@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULT Data</title>
+    <title>GERAÇÃO ULT</title>
     <style>
+        body {
+            font-size: 12px; /* Define o tamanho da fonte para todo o documento */
+        }
+        h2 {
+            font-size: 20px; /* Define o tamanho da fonte para os títulos h2 */
+        }
+        p {
+            font-size: 14px; /* Define o tamanho da fonte para os parágrafos */
+        }
         table {
             border-collapse: collapse;
             width: 100%;
@@ -20,7 +29,10 @@
     </style>
 </head>
 <body>
-    <h2>ULT Data</h2>
+    <h2>Geração - {{ ult_type }}</h2>
+    <p>Período: {{ start_date }} a {{ end_date }}</p>
+    <p>Total de Geração: {{ total_geracao|round(2) }} kWh</p>
+    <p>Média de Geração: {{ media_geracao|round(2) }} kWh</p>
     <table>
         <thead>
             <tr>
@@ -31,41 +43,11 @@
         <tbody>
             {% for row in data %}
             <tr>
-                <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
+                <td>{{ row['data'] }}</td>
+                <td>{{ row['geracao'] }} kWh</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    <script>
-        // Função para realizar o download do PDF assim que a página for carregada
-        window.onload = function() {
-            // Fazer uma requisição AJAX para a rota que gera o PDF
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', window.location.href, true);
-            xhr.responseType = 'blob'; // Indicar que a resposta é um blob (arquivo binário)
-            xhr.onload = function() {
-                // Verificar se a requisição foi bem-sucedida
-                if (xhr.status === 200) {
-                    // Criar um URL temporário para o blob
-                    const url = window.URL.createObjectURL(xhr.response);
-
-                    // Criar um link <a> para fazer o download do arquivo
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'ult_data.pdf'; // Nome do arquivo para download
-                    document.body.appendChild(link);
-
-                    // Clicar automaticamente no link para iniciar o download
-                    link.click();
-
-                    // Liberar o URL temporário após o download
-                    window.URL.revokeObjectURL(url);
-                }
-            };
-            xhr.send();
-        };
-    </script>
 </body>
 </html>

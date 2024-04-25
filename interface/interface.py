@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, request, make_response
 import sqlite3
 from flask_weasyprint import HTML, render_pdf
-
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -43,11 +43,27 @@ def ult_pdf():
     cursor.execute("SELECT DATA, GERACAO FROM dados_diarios WHERE ULT = ? AND DATA BETWEEN ? AND ?", (ult_type, start_date, end_date))
     data = cursor.fetchall()
 
+    # Calcular total de geração e média de geração
+    total_geracao = sum(row[1] for row in data)
+    media_geracao = total_geracao / len(data) if data else 0
+
+    start_date_formatted = datetime.strptime(start_date, '%Y-%m-%d').strftime('%d/%m/%Y')
+    end_date_formatted = datetime.strptime(end_date, '%Y-%m-%d').strftime('%d/%m/%Y')
+
+    # Modifique o loop de formatação dos dados
+    formatted_data = []
+
+    for row in data:
+        formatted_date = datetime.strptime(row[0], '%Y-%m-%d').strftime('%d/%m/%Y')
+        geracao = str(row[1]).replace('.', ',')  # Substitui os pontos por vírgulas
+        formatted_data.append({'data': formatted_date, 'geracao': geracao})
+
+
     # Fechar conexão com o banco de dados
     conn.close()
 
     # Renderizar a página HTML com Jinja2 e passar os dados para a tabela
-    rendered = render_template('ult_pdf.html', data=data)
+    rendered = render_template('ult_pdf.html', data=formatted_data, total_geracao=total_geracao, media_geracao=media_geracao, start_date=start_date_formatted, end_date=end_date_formatted, ult_type=ult_type)
 
     # Gerar PDF a partir do HTML
     pdf = render_pdf(HTML(string=rendered))
