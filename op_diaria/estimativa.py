@@ -15,6 +15,7 @@ def estimar():
     ultimo_dia_mes = (data_atual.replace(day=1, month=data_atual.month % 12 + 1) - timedelta(days=1)).day
 
     # Dicionário para armazenar os dados por ULT
+    quantidade_zeros_por_ult = {}
     dados_por_ult = {}
 
     # Loop para buscar os dados por ULT
@@ -24,21 +25,23 @@ def estimar():
         cursor.execute(query)
         geracoes = cursor.fetchall()
         # Armazenar os dados em uma lista para a ULT atual
+        zeros = sum(1 for geracao in geracoes if geracao[0] == 0)
+    
+        # Armazenar a quantidade de zeros para a ULT atual
+        quantidade_zeros_por_ult[f'ULT {ult}'] = zeros
+
+        #dados_por_ult[f'ULT {ult}'] = [geracao[0] for geracao in geracoes]
         dados_por_ult[f'ULT {ult}'] = [geracao[0] for geracao in geracoes]
 
     # Fechar a conexão com o banco de dados
     conexao.close()
-
-    # Salvar os dados por ULT em variáveis separadas
-    """for ult, geracoes in dados_por_ult.items():
-        globals()[f'dados_{ult}'] = geracoes"""
 
     # Dicionário para armazenar as médias de geração por ULT
     medias_por_ult = {}
 
     # Loop para calcular a média de geração para cada ULT
     for ult, geracoes in dados_por_ult.items():
-        media = sum(geracoes) / len(geracoes)
+        media = sum(geracoes) / (len(geracoes) - quantidade_zeros_por_ult[ult])
         medias_por_ult[ult] = media
 
     # Dicionário para armazenar as somas de geração por ULT

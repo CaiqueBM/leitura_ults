@@ -17,16 +17,18 @@ def get_data():
     end_date = request.args.get('end_date')
     ult_type = request.args.get('ult_type')  # Novo parâmetro para o tipo de ULT selecionado
 
-
     # Conectar ao banco de dados
     conn = sqlite3.connect('dados.db')
     c = conn.cursor()
     c.execute("SELECT DATA, GERACAO, ULT FROM dados_diarios WHERE ULT = ? AND DATA BETWEEN ? AND ?", (ult_type, start_date, end_date))
     data = c.fetchall()
+
+    quant_zeros = sum(1 for row in data if row[1] == 0)
     conn.close()
 
     # Formatar os dados para o formato adequado (exemplo)
     formatted_data = [{'data': row[0], 'geracao': row[1], 'ult': row[2]} for row in data]
+
     return jsonify(formatted_data)
 
 @app.route('/ult_pdf', methods=['GET'])
@@ -43,9 +45,12 @@ def ult_pdf():
     cursor.execute("SELECT DATA, GERACAO FROM dados_diarios WHERE ULT = ? AND DATA BETWEEN ? AND ?", (ult_type, start_date, end_date))
     data = cursor.fetchall()
 
+    # Contar quantas gerações são iguais a zero
+    quant_zeros = sum(1 for row in data if row[1] == 0)
+
     # Calcular total de geração e média de geração
     total_geracao = sum(row[1] for row in data)
-    media_geracao = total_geracao / len(data) if data else 0
+    media_geracao = total_geracao / (len(data) - quant_zeros) if data else 0
 
     start_date_formatted = datetime.strptime(start_date, '%Y-%m-%d').strftime('%d/%m/%Y')
     end_date_formatted = datetime.strptime(end_date, '%Y-%m-%d').strftime('%d/%m/%Y')
@@ -76,4 +81,5 @@ def ult_pdf():
     return response
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    port = 5002
+    app.run(debug=True, host='0.0.0.0', port=port)

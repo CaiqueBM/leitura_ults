@@ -103,8 +103,9 @@
         // Função para calcular e exibir a soma dos valores de geração
         function calcularSomaEMedia(data) {
             const geracao = data.map(item => item.geracao);
+            const quant_zeros = geracao.filter(value => value === 0).length;
             const totalGeração = geracao.reduce((acc, curr) => acc + curr, 0);
-            const mediaGeração = (totalGeração / geracao.length).toFixed(2); // Calcula a média corretamente
+            const mediaGeração = (totalGeração / (geracao.length - quant_zeros)).toFixed(2); // Calcula a média corretamente
 
         document.getElementById('total_geracao').innerText = `Total de Geração: ${totalGeração.toFixed(2)} kWh`;
         document.getElementById('media_geracao').innerText = `Média de Geração: ${mediaGeração} kWh`;
