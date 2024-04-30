@@ -18,7 +18,7 @@ def get_data():
     ult_type = request.args.get('ult_type')  # Novo parâmetro para o tipo de ULT selecionado
 
     # Conectar ao banco de dados
-    conn = sqlite3.connect('dados.db')
+    conn = sqlite3.connect('/home/abs/Aplicativos/leitura_ults/dados.db')
     c = conn.cursor()
     c.execute("SELECT DATA, GERACAO, ULT FROM dados_diarios WHERE ULT = ? AND DATA BETWEEN ? AND ?", (ult_type, start_date, end_date))
     data = c.fetchall()
@@ -38,7 +38,7 @@ def ult_pdf():
     ult_type = request.args.get('ult_type')
 
     # Conectar-se ao banco de dados
-    conn = sqlite3.connect('dados.db')
+    conn = sqlite3.connect('/home/abs/Aplicativos/leitura_ults/dados.db')
     cursor = conn.cursor()
 
     # Executar consulta SQL para obter os dados

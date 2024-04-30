@@ -126,44 +126,27 @@ data_formatada = datetime.strptime(data_anterior, '%Y-%m-%d').strftime('%d/%m/%Y
 ultimo_dia_mes = datetime(data_atual.year, data_atual.month, 1).replace(day=1, month=data_atual.month % 12 + 1) - timedelta(days=1)
 ultimo_dia_att = ultimo_dia_mes.strftime("%Y-%m-%d")
 
-if ultimo_dia_att != data_anterior:
-    mensagem = (
-        f"*GERAÇÃO ULT:* \n\n"
-        f"*DATA:* {data_formatada} \n\n"
-        f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 1', 'ULT'].iloc[0]}:*\n"
-        f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 1', 'GERACAO'].iloc[0]} kWh \n"
-        f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 1']} kWh\n"
-        f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 1']} kWh\n\n"
-        f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 2', 'ULT'].iloc[0]}:*\n"
-        f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 2', 'GERACAO'].iloc[0]} kWh \n"
-        f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 2']} kWh\n"
-        f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 2']} kWh\n\n"
-        f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 3', 'ULT'].iloc[0]}:*\n"
-        f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 3', 'GERACAO'].iloc[0]} kWh \n"
-        f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 3']} kWh\n"
-        f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 3']} kWh\n\n"
-        f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 4', 'ULT'].iloc[0]}:*\n"
-        f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 4', 'GERACAO'].iloc[0]} kWh \n"
-        f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 4']} kWh\n"
-        f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 4']} kWh\n\n"
-    )
-else:
-    mensagem = (
-        f"*GERAÇÃO ULT:* \n\n"
-        f"*DATA:* {data_formatada} \n\n"
-        f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 1', 'ULT'].iloc[0]}:*\n"
-        f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 1', 'GERACAO'].iloc[0]} kWh \n"
-        f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 1']} kWh\n"
-        f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 2', 'ULT'].iloc[0]}:*\n"
-        f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 2', 'GERACAO'].iloc[0]} kWh \n"
-        f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 2']} kWh\n"
-        f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 3', 'ULT'].iloc[0]}:*\n"
-        f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 3', 'GERACAO'].iloc[0]} kWh \n"
-        f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 3']} kWh\n"
-        f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 4', 'ULT'].iloc[0]}:*\n"
-        f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 4', 'GERACAO'].iloc[0]} kWh \n"
-        f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 4']} kWh\n"
-    )
+
+mensagem = (
+    f"*GERAÇÃO ULT:* \n\n"
+    f"*DATA:* {data_formatada} \n\n"
+    f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 1', 'ULT'].iloc[0]}:*\n"
+    f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 1', 'GERACAO'].iloc[0]} kWh \n"
+    f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 1']} kWh\n"
+    f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 1']} kWh\n\n"
+    f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 2', 'ULT'].iloc[0]}:*\n"
+    f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 2', 'GERACAO'].iloc[0]} kWh \n"
+    f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 2']} kWh\n"
+    f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 2']} kWh\n\n"
+    f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 3', 'ULT'].iloc[0]}:*\n"
+    f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 3', 'GERACAO'].iloc[0]} kWh \n"
+    f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 3']} kWh\n"
+    f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 3']} kWh\n\n"
+    f"◉ *{dfdados.loc[dfdados['ULT'] == 'ULT 4', 'ULT'].iloc[0]}:*\n"
+    f"*GERAÇÃO DIÁRIA:* {dfdados.loc[dfdados['ULT'] == 'ULT 4', 'GERACAO'].iloc[0]} kWh \n"
+    f"*GERAÇÃO MÊS:* {estimativas[0]['ULT 4']} kWh\n"
+    f"*PROJEÇÃO MÊS:* {estimativas[1]['ULT 4']} kWh\n\n"
+)
 
 print(mensagem)
 
