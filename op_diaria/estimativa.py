@@ -41,15 +41,18 @@ def estimar():
 
     # Loop para calcular a média de geração para cada ULT
     for ult, geracoes in dados_por_ult.items():
+        print("SOMA GERAÇOES: ", sum(geracoes))
+        print("QUANTIDADE DIAS GERADOS: ", len(geracoes))
+        print("QUANTIDADE DE ZEROS: ", quantidade_zeros_por_ult[ult])
         media = sum(geracoes) / (len(geracoes) - quantidade_zeros_por_ult[ult])
         medias_por_ult[ult] = media
 
-    # Dicionário para armazenar as somas de geração por ULT
+    # Dicionário para armazenar as somas de geração por ULT"quantidade": 0,
     somas_por_ult = {}
 
     # Loop para calcular a soma de geração para cada ULT do primeiro dia até o dia atual
     for ult, geracoes in dados_por_ult.items():
-        soma = sum(geracoes[:data_atual.day])
+        soma = sum(geracoes)
         somas_por_ult[ult] = soma
 
     # Dicionário para armazenar as projeções de geração por ULT
@@ -57,7 +60,7 @@ def estimar():
 
     # Loop para projetar a geração para o restante do mês
     for ult, media in medias_por_ult.items():
-        dias_restantes = ultimo_dia_mes - data_atual.day
+        dias_restantes = ultimo_dia_mes - data_anterior
         projecao = media * dias_restantes
         projecao = projecao + somas_por_ult[ult]
         projecoes_por_ult[ult] = projecao
