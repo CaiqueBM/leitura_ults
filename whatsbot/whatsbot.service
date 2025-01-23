@@ -1,0 +1,14 @@
+[Unit]
+Description= Servidor WhatsApp
+After=network.target
+
+[Service]
+ExecStart=/home/abs/.nvm/versions/node/v21.7.3/bin/node /home/abs/Aplicativos/leitura_ults/whatsbot/index.js
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=nodejs-example
+
+[Install]
+WantedBy=multi-user.target

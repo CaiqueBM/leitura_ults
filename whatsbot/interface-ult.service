@@ -1,0 +1,14 @@
+[Unit]
+Description=Servidor Python
+After=network.target
+
+[Service]
+ExecStart=/home/abs/.pyenv/versions/ult/bin/python /home/abs/Aplicativos/leitura_ults/interface/interface.py
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=python-script
+
+[Install]
+WantedBy=multi-user.target

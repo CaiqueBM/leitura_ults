@@ -8,7 +8,8 @@ data_atual = datetime.now()
 data_anterior = data_atual - timedelta(days=1)
 
 ids = [578496, 667618, 686932, 767468]
-ult = {578496: "ULT 1", 667618: "ULT 3", 686932: "ULT 4", 767468: "ULT 2"}
+ult = 
+
 
 # Conectar ao banco de dados
 conn = sqlite3.connect('dados.db')
@@ -150,13 +151,13 @@ mensagem = (
 
 print(mensagem)
 
-#Envio de mensagens para o whatsapp
-from run import enviar_mensagem
+# #Envio de mensagens para o whatsapp
+# from run import enviar_mensagem
 
-with open('/home/abs/Aplicativos/leitura_ults/numeros.txt', 'r') as arquivo:
-    linhas = arquivo.readlines()
+# with open('/home/abs/Aplicativos/leitura_ults/numeros.txt', 'r') as arquivo:
+#     linhas = arquivo.readlines()
 
-for linha in linhas:
-    numero = str(linha.strip())
-    numero = numero + '@c.us'
-    enviar_mensagem(numero, mensagem)
+# for linha in linhas:
+#     numero = str(linha.strip())
+#     numero = numero + '@c.us'
+#     enviar_mensagem(numero, mensagem)

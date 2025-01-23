@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <img src="{{ url_for('static', filename='Logo.png') }}" alt="Logo" class="logo">
+            
+            {% if request.endpoint != 'select_date' %}
+                {% if request.endpoint == 'index' %}
+                    <!-- Na página 'index', o botão redireciona para 'select_date' -->
+                    <a href="{{ url_for('select_date') }}" class="back-button">Selecionar Data</a>
+                {% elif request.endpoint == 'client_detail' %}
+                    <!-- Na página 'client_detail', o botão redireciona para 'index' -->
+                    <a href="{{ url_for('index') }}" class="back-button">Voltar</a>
+                {% endif %}
+            {% endif %}
+            <!-- Exibe o botão de logout apenas se o usuário estiver logado -->
+            {% if session.get('logged_in') %}
+                <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+            {% endif %}
+
+        </div>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

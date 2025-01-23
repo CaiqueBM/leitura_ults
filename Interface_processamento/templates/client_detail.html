@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="message-box">
+    <h2 id="status-message">
+        {% if client[3] == "TRUE" %}
+            Cliente no GERAR
+        {% else %}
+            Cliente fora do GERAR
+        {% endif %}
+    </h2>
+    <div class="expandable-section">
+        <div class="expandable-header">
+            <span class="arrow">▼</span>
+        </div>
+        <div class="expandable-content">
+            <button class="message-btn" data-client-id="{{ client[0] }}">Atualizar Status</button>
+        </div>
+    </div>
+</div>
+
+<h1 class="page-title">Detalhes do Cliente: {{ client[1] }}</h1>
+<div class="economia">
+    <form action="/calculo_economia" method="POST">
+        <input type="hidden" name="unid_consumidora" value="{{ client[0] }}">
+        <input type="hidden" name="client_id" value="{{ client[1] }}">
+        <button type="submit" class="btn btn-economia">Gerar Fatura</button>
+    </form>
+</div>
+
+<div class="actions-container">
+    <!--<a href="{{ url_for('download_fatura', filename=client[4], path=path_completo) }}" class="btn btn-action">Ir para Fatura</a>-->
+</div>
+
+    <div class="iframe-container">
+        <div class="iframe-wrapper">
+            <div class="select-container">
+                <h4>Selecione...</h4>
+                <select id="iframe-select">
+                    <option value="Fatura">Fatura</option>
+                    <option value="Demonstrativo">Demonstrativo</option>
+                    <!-- Adicione mais opções conforme necessário -->
+                </select>
+            </div>
+        <iframe id="content-iframe"
+            src="{{ url_for('download_fatura', filename=client[4], path=path_completo) }}"
+            width="600px" height="900px">
+        </iframe>
+        </div>
+
+    <div class="iframe-content">
+        <form method="POST">
+            <h1>Gerações</h1>
+            <h2>Geração própria:</h2>
+            <table class="styled-table" border="1">
+                <tr>
+                    <th>UNIDADE_EDP</th>
+                    <th>MÊS PRODUÇÃO</th>
+                    <th>MONTANTE</th>
+                    <th>FATURAMENTO</th>
+                </tr>
+                {% for row in valores_geracao_propria %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>{{ row[3] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        
+            <h2>Geração recebida de outra unidade:</h2>
+            <table class="styled-table" border="1">
+                <tr>
+                    <th>UNIDADE_EDP</th>
+                    <th>MÊS PRODUÇÃO</th>
+                    <th>MONTANTE</th>
+                    <th>FATURAMENTO</th>
+                    <th>AÇÃO</th>
+                </tr>
+                {% for row in valores_com_edp %}
+                <tr>
+                    <td>
+                        {% if row[0] == 'EXTERNO' %}
+                            {{ row[0] }}
+                        {% else %}
+                            {% for geradora in geradoras %}
+                                {% if geradora[0] == row[0] %}
+                                    {{ row[0] }} - {{geradora[1] }}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>{{ row[3] }}</td>
+                    <td>
+                        <form></form>
+                        <form action="/excluir_geracao" method="POST">
+                            <input type="hidden" name="unidade_edp" value="{{ row[0] }}">
+                            <input type="hidden" name="mes_producao" value="{{ row[1] }}">
+                            <input type="hidden" name="montante" value="{{ row[2] }}">
+                            <input type="hidden" name="faturamento" value="{{ row[3] }}">
+                            <input type="hidden" name="client_id" value="{{ client[1] }}">
+                            <input type="hidden" name="unid_consumidora" value="{{ client[0] }}">
+                            <button type="submit" class="delete-button">X</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        
+            <h2>Relacionar unidades:</h2>
+            <table class="styled-table" border="1">
+                <tr>
+                    <th>Escolha UNIDADE_EDP</th>
+                    <th>MÊS PRODUÇÃO</th>
+                    <th>MONTANTE</th>
+                    <th>FATURAMENTO</th>
+                </tr>
+                {% for row in valores_sem_edp %}
+                <tr>
+                    <td>
+                        <select id="allselect" name="relacionar_{{ loop.index0 }}">
+                            <option value="">Selecione...</option>
+                            <option value="EXTERNO">Externo</option>
+                            {% for geradora in geradoras %}
+                                <option value="{{ geradora[0] }}">{{ geradora[0] }} - {{ geradora[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>{{ row[3] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            
+            <h5>Ao clicar em salvar, será apenas atualizado o banco de dados, relacionando as unidades consumidoras com as gerações.</h5>
+            <div class="button-container">
+                <button type="submit" name="action" class="btn btn-confirm">Salvar</button>
+            </div>
+
+        </form>
+       </div>
+</div>
+
+<!-- <form action="{{ url_for('client_detail', client_id=client[0]) }}" method="POST" class="status-form">
+    <button type="submit" name="action" value="confirmar" class="btn btn-confirm">Confirmar</button>
+    <button type="submit" name="action" value="revisar" class="btn btn-review">Revisar</button>
+</form> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const select = document.getElementById('iframe-select');
+        const iframe = document.getElementById('content-iframe');
+    
+        function loadIframe(option) {
+            fetch('{{ url_for("atualizar_iframe") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    option: option,
+                    clientId: '{{ client[0] }}',
+                    filename: '{{ client[4] }}',
+                    path: '{{ path_completo }}'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.newSrc) {
+                    iframe.src = data.newSrc;
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+    
+        // Carregar a fatura inicialmente
+        loadIframe('Fatura');
+    
+        select.addEventListener('change', function() {
+            loadIframe(this.value);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const expandableHeader = document.querySelector('.expandable-header');
+    const expandableContent = document.querySelector('.expandable-content');
+    const arrow = document.querySelector('.arrow');
+
+
+    if (expandableHeader && expandableContent && arrow) {
+        expandableHeader.addEventListener('click', function() {
+            expandableContent.classList.toggle('show');
+            arrow.classList.toggle('rotated');
+        });
+    }
+
+    const updateButton = document.querySelector('.message-btn');
+    const statusMessage = document.getElementById('status-message');
+
+    if (updateButton && statusMessage) {
+        updateButton.addEventListener('click', function() {
+            console.log('Botão clicado');
+
+            const clientId = this.dataset.clientId;
+            console.log('ClientId:', clientId);
+
+            updateButton.disabled = true;
+            updateButton.textContent = 'Atualizando...';
+
+            fetch('{{ url_for("atualizar_status") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    clientId: clientId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Resposta do servidor:', data);
+                if (data.success) {
+                    console.log('Status atualizado com sucesso');
+                    statusMessage.textContent = data.newStatus === "TRUE" 
+                        ? "Cliente no GERAR" 
+                        : "Cliente fora do GERAR";
+                    updateButton.textContent = 'Atualizar Status';
+                } else {
+                    console.error('Erro ao atualizar status:', data.message);
+                    updateButton.textContent = 'Tentar Novamente';
+                }
+            })
+            .catch(error => {
+                console.error('Erro na requisição:', error);
+                updateButton.textContent = 'Erro ao Atualizar';
+            })
+            .finally(() => {
+                updateButton.disabled = false;
+            });
+        });
+    } else {
+        console.error('Botão de atualização ou elemento de status não encontrado');
+    }
+});
+
+document.querySelectorAll('.delete-button').forEach(button => {
+    button.addEventListener('click', function(event) {
+        if (!confirm('Tem certeza que deseja remover este valor?')) {
+            event.preventDefault();
+        }
+    });
+});
+
+</script>
+    
+{% endblock %}
