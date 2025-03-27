@@ -2,12 +2,20 @@
 
 {% block content %}
 
+<!-- Adicione isso no início do seu block content -->
+<div id="loading-overlay" style="display: none;">
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Processando, por favor aguarde...</p>
+    </div>
+</div>
+
 <div class="message-box">
     <h2 id="status-message">
         {% if client[3] == "TRUE" %}
-            Cliente no GERAR
+        Cliente no GERAR
         {% else %}
-            Cliente fora do GERAR
+        Cliente fora do GERAR
         {% endif %}
     </h2>
     <div class="expandable-section">
@@ -20,12 +28,26 @@
     </div>
 </div>
 
-<h1 class="page-title">Detalhes do Cliente: {{ client[1] }}</h1>
+<h1 class="page-title">Detalhes do Cliente: {{ client[2] }} - {{ client[0] }}</h1>
+<h2 class="page-title">Data Referência: {{ data_referencia }}</h2>
+
 <div class="economia">
     <form action="/calculo_economia" method="POST">
-        <input type="hidden" name="unid_consumidora" value="{{ client[0] }}">
-        <input type="hidden" name="client_id" value="{{ client[1] }}">
-        <button type="submit" class="btn btn-economia">Gerar Fatura</button>
+        <button type="submit" id="btn-simulador" class="btn btn-simulador">Preencher Planilha</button>
+        <div id="input-container-simulacao" style="left:50%"></div>
+    </form>
+
+    <a href="{{ link_dash|safe }}" class="btn-planilha-economia" target="_blank" rel="noopener noreferrer">Ver Planilha
+        de Economia</a>
+
+    <form action="/gerar_fat_simulacao" method="POST">
+        <button type="button" id="btn-gerar-fat-simulacao" class="btn btn-gerar-fat-simulacao">Gerar Fatura
+            Simulação</button>
+        <div id="input-container-simulacao-fatura" style="left:50%"></div>
+    </form>
+    <!-- <div><a href="http://localhost:3002/dashboard/snapshot/uom87NMGdzfVVvcmDcGI486B4Vv8bPvQ.com" target="_blank" class="btn btn-gerar-fat-simulacao">Ver Kiosk</a></div> -->
+    <form action="/gerar_fatura" method="POST">
+        <button type="submit" id="btn-gerar-fatura" class="btn btn-economia">Gerar Fatura com Boleto</button>
     </form>
 </div>
 
@@ -33,25 +55,28 @@
     <!--<a href="{{ url_for('download_fatura', filename=client[4], path=path_completo) }}" class="btn btn-action">Ir para Fatura</a>-->
 </div>
 
-    <div class="iframe-container">
-        <div class="iframe-wrapper">
-            <div class="select-container">
-                <h4>Selecione...</h4>
-                <select id="iframe-select">
-                    <option value="Fatura">Fatura</option>
-                    <option value="Demonstrativo">Demonstrativo</option>
-                    <!-- Adicione mais opções conforme necessário -->
-                </select>
-            </div>
-        <iframe id="content-iframe"
-            src="{{ url_for('download_fatura', filename=client[4], path=path_completo) }}"
+<div class="iframe-container">
+    <div class="iframe-wrapper">
+        <div class="select-container">
+            <h4>Selecione...</h4>
+            <select id="iframe-select">
+                <option value="Fatura">Fatura</option>
+                <option value="Demonstrativo">Demonstrativo</option>
+                <option value="Fatura ULT">Fatura ULT</option>
+                <!-- Adicione mais opções conforme necessário -->
+            </select>
+        </div>
+        <iframe id="content-iframe" src="{{ url_for('download_fatura', filename=client[4], path=path_completo) }}"
             width="600px" height="900px">
         </iframe>
-        </div>
+    </div>
 
+    {% if egeradora == "0" %}
     <div class="iframe-content">
         <form method="POST">
             <h1>Gerações</h1>
+
+            {% if valores_geracao_propria %}
             <h2>Geração própria:</h2>
             <table class="styled-table" border="1">
                 <tr>
@@ -59,6 +84,7 @@
                     <th>MÊS PRODUÇÃO</th>
                     <th>MONTANTE</th>
                     <th>FATURAMENTO</th>
+                    <th>TIPO GD</th>
                 </tr>
                 {% for row in valores_geracao_propria %}
                 <tr>
@@ -66,10 +92,14 @@
                     <td>{{ row[1] }}</td>
                     <td>{{ row[2] }}</td>
                     <td>{{ row[3] }}</td>
+                    <td>{{ row[4] }}</td>
                 </tr>
                 {% endfor %}
             </table>
-        
+            {% endif %}
+
+
+            {% if valores_com_edp %}
             <h2>Geração recebida de outra unidade:</h2>
             <table class="styled-table" border="1">
                 <tr>
@@ -77,24 +107,26 @@
                     <th>MÊS PRODUÇÃO</th>
                     <th>MONTANTE</th>
                     <th>FATURAMENTO</th>
+                    <th>TIPO GD</th>
                     <th>AÇÃO</th>
                 </tr>
                 {% for row in valores_com_edp %}
                 <tr>
                     <td>
                         {% if row[0] == 'EXTERNO' %}
-                            {{ row[0] }}
+                        {{ row[0] }}
                         {% else %}
-                            {% for geradora in geradoras %}
-                                {% if geradora[0] == row[0] %}
-                                    {{ row[0] }} - {{geradora[1] }}
-                                {% endif %}
-                            {% endfor %}
+                        {% for geradora in geradoras %}
+                        {% if geradora[0] == row[0] %}
+                        {{ row[0] }} - {{geradora[1] }}
+                        {% endif %}
+                        {% endfor %}
                         {% endif %}
                     </td>
                     <td>{{ row[1] }}</td>
                     <td>{{ row[2] }}</td>
                     <td>{{ row[3] }}</td>
+                    <td>{{ row[4] }}</td>
                     <td>
                         <form></form>
                         <form action="/excluir_geracao" method="POST">
@@ -110,7 +142,10 @@
                 </tr>
                 {% endfor %}
             </table>
-        
+            {% endif %}
+
+
+            {% if valores_sem_edp %}
             <h2>Relacionar unidades:</h2>
             <table class="styled-table" border="1">
                 <tr>
@@ -118,6 +153,7 @@
                     <th>MÊS PRODUÇÃO</th>
                     <th>MONTANTE</th>
                     <th>FATURAMENTO</th>
+                    <th>TIPO GD</th>
                 </tr>
                 {% for row in valores_sem_edp %}
                 <tr>
@@ -126,157 +162,573 @@
                             <option value="">Selecione...</option>
                             <option value="EXTERNO">Externo</option>
                             {% for geradora in geradoras %}
-                                <option value="{{ geradora[0] }}">{{ geradora[0] }} - {{ geradora[1] }}</option>
+                            <option value="{{ geradora[0] }}">{{ geradora[0] }} - {{ geradora[1] }}</option>
                             {% endfor %}
                         </select>
                     </td>
                     <td>{{ row[1] }}</td>
                     <td>{{ row[2] }}</td>
                     <td>{{ row[3] }}</td>
+                    <td>{{ row[4] }}</td>
                 </tr>
                 {% endfor %}
             </table>
-            
-            <h5>Ao clicar em salvar, será apenas atualizado o banco de dados, relacionando as unidades consumidoras com as gerações.</h5>
+
+            <h5>Ao clicar em salvar, será apenas atualizado o banco de dados, relacionando as unidades consumidoras com
+                as gerações.</h5>
             <div class="button-container">
                 <button type="submit" name="action" class="btn btn-confirm">Salvar</button>
             </div>
+            {% endif %}
 
+            <!--  -->
+
+            {% if resultados %}
+            <h2>SALDOS / CRÉDITOS</h2>
+            {% set dados_por_usina = {} %}
+            {% for row in resultados %}
+            {% set mes, receptora, usina, montante, classediferenca = row %}
+            {% if usina not in dados_por_usina %}
+            {% set _ = dados_por_usina.update({usina: {}}) %}
+            {% endif %}
+            {% set _ = dados_por_usina[usina].update({mes: (montante, classediferenca)}) %}
+            {% endfor %}
+
+            {% set nomes_usinas = {
+                '160993441': '160993441 - ULT 1',
+                '161084053': '161084053 - ULT 2',
+                '161041889': '161041889 - ULT 3',
+                '161041895': '161041895 - ULT 4',
+                '161099718': '161099718 - LUCAS GENEROSO 1',
+                '161147185': '161147185 - Gilles 1',
+                '161127416': '161127416 - GD3 - MAIS ALIMENTOS',
+                '161171784': '161171784 - POLETO 1'
+            } %}
+
+            <table class="styled-table" border="1">
+                <tr>
+                    <th>USINA</th>
+                    {% for mes in meses_saldo %}
+                    <th>{{ mes }}</th>
+                    {% endfor %}
+                </tr>
+                {% for usina in dados_por_usina %}
+                <tr>
+                    <td style="white-space: nowrap; padding: 5px 10px;">{{ nomes_usinas.get(usina, usina) }}</td>
+                    {% for mes in meses_saldo %}
+                    {% set valor = dados_por_usina[usina].get(mes, ('', '')) %}
+                    <td style="white-space: nowrap; padding: 10px 10px;" class="{{ dados_por_usina[usina].get(mes, '')[1] }}">{{ dados_por_usina[usina].get(mes, '')[0] }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+
+            <!-- 1 -->
         </form>
-       </div>
-</div>
 
-<!-- <form action="{{ url_for('client_detail', client_id=client[0]) }}" method="POST" class="status-form">
-    <button type="submit" name="action" value="confirmar" class="btn btn-confirm">Confirmar</button>
-    <button type="submit" name="action" value="revisar" class="btn btn-review">Revisar</button>
-</form> -->
+        {% else %}
+        <div class="iframe-content">
+            <form method="POST">
+                <h1>Gerações</h1>
+                {% if valores_geracao_propria %}
+                <h2>Geração própria:</h2>
+                <table class="styled-table" border="1">
+                    <tr>
+                        <th>UNIDADE_EDP</th>
+                        <th>MÊS PRODUÇÃO</th>
+                        <th>LEITURA TELEMETRIA</th>
+                        <th>ENERGIA INJETADA</th>
+                        <th>EFICIÊNCIA</th>
+                    </tr>
+                    {% for row in valores_geracao_propria %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>{{ row[3] }}</td>
+                        <td>
+                            {% if row[2]|float > 0 %}
+                            {{ "{:.3f}".format(row[3]|float / row[2]|float) }}
+                            {% else %}
+                            0.0000
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% endif %}
+                {% endif %}
+                <form method="POST">
+                    <div class="button-container-att">
+                        <button type="button" id="att-db" name="action-db" class="btn btn-att-db">Atualizar Banco de
+                            Dados</button>
+                    </div>
+                </form>
+        </div>
+    </div>
 
+    <div id="grafanaModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <iframe id="grafanaIframe" style="width:100%; height:80vh; border:none;"></iframe>
+        </div>
+    </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const select = document.getElementById('iframe-select');
-        const iframe = document.getElementById('content-iframe');
-    
-        function loadIframe(option) {
-            fetch('{{ url_for("atualizar_iframe") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    option: option,
-                    clientId: '{{ client[0] }}',
-                    filename: '{{ client[4] }}',
-                    path: '{{ path_completo }}'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.newSrc) {
-                    iframe.src = data.newSrc;
-                }
-            })
-            .catch(error => console.error('Erro:', error));
+    <script>
+        // FUNÇÃO PARA MOSTRAR O LOADING
+        function showLoading() {
+            document.getElementById('loading-overlay').style.display = 'flex';
         }
-    
-        // Carregar a fatura inicialmente
-        loadIframe('Fatura');
-    
-        select.addEventListener('change', function() {
-            loadIframe(this.value);
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-    const expandableHeader = document.querySelector('.expandable-header');
-    const expandableContent = document.querySelector('.expandable-content');
-    const arrow = document.querySelector('.arrow');
+        // FUNÇÃO PARA TIRAR O LOADING
+        function hideLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+        document.addEventListener('DOMContentLoaded', function () {
 
 
-    if (expandableHeader && expandableContent && arrow) {
-        expandableHeader.addEventListener('click', function() {
-            expandableContent.classList.toggle('show');
-            arrow.classList.toggle('rotated');
-        });
-    }
+            //BOTÃO DE ATUALIZAR O BANCO DE DADOS (FAZ A LEITURA DA FATURA E GUARDA NO BANCO DE DADOS)
+            const btnAtualizar = document.getElementById('att-db');
 
-    const updateButton = document.querySelector('.message-btn');
-    const statusMessage = document.getElementById('status-message');
+            btnAtualizar.addEventListener('click', function (event) {
+                event.preventDefault(); // Previne qualquer ação padrão do botão
 
-    if (updateButton && statusMessage) {
-        updateButton.addEventListener('click', function() {
-            console.log('Botão clicado');
+                // Mostra um diálogo de confirmação
+                if (confirm('Tem certeza que deseja atualizar o banco de dados?')) {
+                    console.log('Botão Atualizar clicado');
+                    const path = '{{ path_fatura }}';
+                    const geradora = '{{ egeradora }}';
+                    const dados = {
+                        path: path,
+                        geradora: geradora
+                    };
 
-            const clientId = this.dataset.clientId;
-            console.log('ClientId:', clientId);
-
-            updateButton.disabled = true;
-            updateButton.textContent = 'Atualizando...';
-
-            fetch('{{ url_for("atualizar_status") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    clientId: clientId
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Resposta do servidor:', data);
-                if (data.success) {
-                    console.log('Status atualizado com sucesso');
-                    statusMessage.textContent = data.newStatus === "TRUE" 
-                        ? "Cliente no GERAR" 
-                        : "Cliente fora do GERAR";
-                    updateButton.textContent = 'Atualizar Status';
+                    showLoading();
+                    fetch('/atualizar_db', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(dados)
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Erro na resposta do servidor');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Resposta do servidor:', data);
+                            alert('Atualização concluída com sucesso!');
+                            window.location.reload();
+                        })
+                        .catch(error => {
+                            console.error('Erro:', error);
+                            alert('Ocorreu um erro ao atualizar o banco de dados.');
+                        })
+                        .finally(() => {
+                            hideLoading(); // Esconde o loading após a requisição, independentemente do resultado
+                        });
                 } else {
-                    console.error('Erro ao atualizar status:', data.message);
-                    updateButton.textContent = 'Tentar Novamente';
+                    console.log('Atualização cancelada pelo usuário');
                 }
-            })
-            .catch(error => {
-                console.error('Erro na requisição:', error);
-                updateButton.textContent = 'Erro ao Atualizar';
-            })
-            .finally(() => {
-                updateButton.disabled = false;
             });
+
+            //  IFRAME
+            const select = document.getElementById('iframe-select');
+            const iframe = document.getElementById('content-iframe');
+
+            function loadIframe(option) {
+                fetch('{{ url_for("atualizar_iframe") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        option: option,
+                        clientId: '{{ client[0] }}',
+                        filename: '{{ client[4] }}',
+                        path: '{{ path_completo }}'
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.newSrc) {
+                            iframe.src = data.newSrc;
+                        }
+                    })
+                    .catch(error => console.error('Erro:', error));
+            }
+
+            // Carregar a fatura inicialmente
+            loadIframe('Fatura');
+
+            select.addEventListener('change', function () {
+                loadIframe(this.value);
+            });
+
+            const expandableHeader = document.querySelector('.expandable-header');
+            const expandableContent = document.querySelector('.expandable-content');
+            const arrow = document.querySelector('.arrow');
+
+            // GERAR
+            if (expandableHeader && expandableContent && arrow) {
+                expandableHeader.addEventListener('click', function () {
+                    expandableContent.classList.toggle('show');
+                    arrow.classList.toggle('rotated');
+                });
+            }
+
+            // BOTÃO DE ATUALIZAR SITUAÇÃO DO CLIENTE NO GERAR
+            const updateButton = document.querySelector('.message-btn');
+            const statusMessage = document.getElementById('status-message');
+
+            if (updateButton && statusMessage) {
+                updateButton.addEventListener('click', function () {
+                    console.log('Botão clicado');
+
+                    const clientId = this.dataset.clientId;
+                    console.log('ClientId:', clientId);
+
+                    updateButton.disabled = true;
+                    updateButton.textContent = 'Atualizando...';
+
+                    showLoading();
+                    fetch('{{ url_for("atualizar_status") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            clientId: clientId
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Resposta do servidor:', data);
+                            if (data.success) {
+                                console.log('Status atualizado com sucesso');
+                                statusMessage.textContent = data.newStatus === "TRUE"
+                                    ? "Cliente no GERAR"
+                                    : "Cliente fora do GERAR";
+                                updateButton.textContent = 'Atualizar Status';
+                            } else {
+                                console.error('Erro ao atualizar status:', data.message);
+                                updateButton.textContent = 'Tentar Novamente';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro na requisição:', error);
+                            updateButton.textContent = 'Erro ao Atualizar';
+                        })
+                        .finally(() => {
+                            updateButton.disabled = false;
+                            hideLoading();
+                        });
+                });
+            } else {
+                console.error('Botão de atualização ou elemento de status não encontrado');
+            }
+
+            // BOTAO DELETE DAS TABELAS
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    if (!confirm('Tem certeza que deseja remover este valor?')) {
+                        event.preventDefault();
+                    }
+                });
+            });
+
+            // BOTÃO PARA GERAR SIMULAÇÃO DE FATURA
+            const btnGerarFatSimulacao = document.getElementById('btn-gerar-fat-simulacao');
+            const inputContainerSimulacaoFatura = document.getElementById('input-container-simulacao-fatura');
+            console.log('btnGerarFatSimulacao:', btnGerarFatSimulacao);
+            console.log('inputContainerSimulacaoFatura:', inputContainerSimulacaoFatura);
+
+            btnGerarFatSimulacao.addEventListener('click', function (event) {
+                console.log('Botão clicado');
+                event.preventDefault(); // Previne o comportamento padrão do botão
+
+                const inputHtml = `
+        <div id="simulacao-input">
+            <h4>Digite uma observação sobre essa Fatura</h4>
+            <input type="text" id="observacao-fatura" placeholder="Digite a observação">
+            <button type="button" id="btn-enviar-simulacao-fatura">Enviar</button>
+            <button type="button" id="btn-cancelar-simulacao-fatura">Cancelar</button>
+        </div>
+    `;
+                inputContainerSimulacaoFatura.innerHTML = inputHtml;
+                console.log('HTML inserido:', inputHtml);
+
+                const btnEnviar = document.getElementById('btn-enviar-simulacao-fatura');
+                const btnCancelar = document.getElementById('btn-cancelar-simulacao-fatura');
+
+                btnEnviar.addEventListener('click', function () {
+                    console.log('Botão Enviar clicado');
+                    const observacao = document.getElementById('observacao-fatura').value;
+                    if (!observacao.trim()) {
+                        alert('Por favor, digite uma observação.');
+                        return;
+                    }
+
+                    // Cria um objeto com os dados
+                    const dados = {
+                        observacao: observacao,
+                        unid_consumidora: '{{ client[0] }}',
+                        client_id: '{{ client[1] }}'
+                    };
+
+                    showLoading();
+                    // Envia os dados como JSON
+                    fetch('/gerar_fat_simulacao', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(dados)
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Erro na resposta do servidor');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                alert('Fatura de simulação gerada com sucesso!');
+                                inputContainerSimulacaoFatura.innerHTML = ''; // Limpa o input
+
+
+                                // Abre o modal com o iframe do Grafana
+                                if (data.grafana_url) {
+                                    console.log('URL do Grafana:', data.grafana_url);
+
+                                    const modal = document.getElementById('grafanaModal');
+                                    const iframe = document.getElementById('grafanaIframe');
+
+                                    iframe.src = data.grafana_url;
+
+                                    modal.style.display = "block";
+
+                                    // Fecha o modal quando clicar no X
+                                    const span = document.getElementsByClassName("close")[0];
+                                    span.onclick = function () {
+                                        modal.style.display = "none";
+                                        apagarSnapshot('{{ client[0] }}');
+                                    }
+                                    // Fecha o modal se clicar fora dele
+                                    window.onclick = function (event) {
+                                        if (event.target == modal) {
+                                            modal.style.display = "none";
+                                            apagarSnapshot('{{ client[0] }}');
+                                        }
+                                    }
+                                } else {
+                                    console.error('URL do Grafana não fornecida');
+                                }
+
+                            } else {
+                                alert('Erro ao gerar fatura de simulação: ' + (data.message || 'Erro desconhecido'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro:', error);
+                            alert('Erro ao comunicar com o servidor: ' + error.message);
+                        })
+                        .finally(() => {
+                            // Esconde o loading após a requisição, independentemente do resultado
+                            hideLoading();
+                        });
+                });
+
+                btnCancelar.addEventListener('click', function () {
+                    console.log('Botão Cancelar clicado');
+                    inputContainerSimulacaoFatura.innerHTML = ''; // Limpa o input
+                });
+            });
+
+            // INPUT BOTAO SIMULADOR
+            const btnSimulador = document.getElementById('btn-simulador');
+            const inputContainerSimulacao = document.getElementById('input-container-simulacao');
+
+            btnSimulador.addEventListener('click', function (event) {
+                event.preventDefault();
+                if (confirm('Deseja realmente gerar uma simulação?')) {
+                    const inputHtml = `
+            <div id="simulacao-input">
+                <h4>Digite o valor dos valores faltantes</h4>
+                <input type="text" id="valor_outro" name="valor_outro" placeholder="VALOR "OUTROS" DA FATURA">
+                <button type="button" id="btn-enviar-simulacao">Enviar</button>
+                <button type="button" id="btn-cancelar-simulacao">Cancelar</button>
+            </div>
+        `;
+                    inputContainerSimulacao.innerHTML = inputHtml;
+
+                    const btnEnviarSimulacao = document.getElementById('btn-enviar-simulacao');
+                    const btnCancelarSimulacao = document.getElementById('btn-cancelar-simulacao');
+
+                    // Função para limpar erros
+                    function limparErros() {
+                        document.querySelectorAll('.erro-mensagem').forEach(msg => msg.remove());
+                        document.getElementById('valor_outro').style.borderColor = '';
+                    }
+
+                    // Função para mostrar erro
+                    function mostrarErro(elemento, mensagem) {
+                        const mensagemErro = document.createElement('div');
+                        mensagemErro.className = 'erro-mensagem';
+                        mensagemErro.style.color = 'red';
+                        mensagemErro.style.fontSize = '12px';
+                        mensagemErro.textContent = mensagem;
+                        elemento.style.borderColor = 'red';
+                        elemento.after(mensagemErro);
+                    }
+
+                    // Handler para o botão enviar
+                    btnEnviarSimulacao.addEventListener('click', function () {
+                        limparErros();
+
+                        const valor_outro = document.getElementById('valor_outro').value;
+                        let temErro = false;
+
+                        if (!valor_outro || valor_outro.trim() === '') {
+                            mostrarErro(document.getElementById('valor_outro'), 'Por favor, preencha este campo');
+                            temErro = true;
+                        }
+
+                        if (!temErro) {
+                            showLoading();
+                            fetch('/calculo_economia', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    valor_outro: valor_outro,
+                                    unid_consumidora: '{{ client[0] }}',
+                                    client_id: '{{ client[1] }}',
+                                })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log('Simulação enviada com sucesso:', data);
+                                    alert('Simulação enviada com sucesso!');
+                                    inputContainerSimulacao.innerHTML = '';
+                                })
+                                .catch(error => {
+                                    console.error('Erro ao enviar simulação:', error);
+                                    alert('Erro ao enviar simulação. Tente novamente.');
+                                })
+                                .finally(() => {
+                                    hideLoading();
+                                });
+                        }
+                    });
+
+                    // Handler para o botão cancelar
+                    btnCancelarSimulacao.addEventListener('click', function () {
+                        inputContainerSimulacao.innerHTML = '';
+                    });
+
+                    // Handlers para remover erros ao digitar
+                    ['valor_outro'].forEach(id => {
+                        document.getElementById(id).addEventListener('input', function () {
+                            this.style.borderColor = '';
+                            const mensagemErro = this.nextElementSibling;
+                            if (mensagemErro && mensagemErro.className === 'erro-mensagem') {
+                                mensagemErro.remove();
+                            }
+                        });
+                    });
+                }
+            });
+
+            // BOTÃO DE GERAR FATURA
+            document.getElementById('btn-gerar-fatura').addEventListener('click', function (e) {
+                e.preventDefault();
+
+                if (confirm('Deseja realmente gerar a fatura?')) {
+                    const unidConsumidora = '{{ client[0] }}';
+                    const clienteNome = '{{ client[1] }}';
+                    const clientId = '{{ client[1] }}';
+                    showLoading();
+                    fetch('/gerar_fatura', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            unid_consumidora: unidConsumidora,
+                            cliente: clienteNome,
+                            client_id: clientId
+                        })
+                    })
+                        .then(response => {
+                            if (response.status === 401) { // Não autenticado
+                                window.location.href = '/login';
+                                return;
+                            }
+                            return response.json().then(data => ({ status: response.status, data }));
+                        })
+                        .then(({ status, data }) => {
+                            if (!data) return;
+
+                            if (data.success) {
+                                alert('Fatura gerada com sucesso!');
+                                if (data.redirect_url) {
+                                    window.location.href = data.redirect_url;
+                                }
+                            } else {
+                                alert(`Erro: ${data.message || 'Erro desconhecido'}`);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro:', error);
+                            alert('Erro na comunicação com o servidor');
+                        })
+                        .finally(() => {
+                            hideLoading(); // Esconde o loading após a requisição, independentemente do resultado
+                        });
+                }
+            });
+
+            // Adiciona listeners para remover o estilo de erro quando o usuário começar a digitar
+            document.getElementById('simulacao-valor').addEventListener('input', function () {
+                this.style.borderColor = '';
+                const mensagemErro = this.nextElementSibling;
+                if (mensagemErro && mensagemErro.className === 'erro-mensagem') {
+                    mensagemErro.remove();
+                }
+            });
+
+            function apagarSnapshot(clientezero) {
+                showLoading();
+                fetch('/apagar_snapshot_route', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ client: clientezero }) // Enviando client[0] no corpo da requisição
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Snapshot apagado com sucesso');
+                        } else {
+                            console.error('Erro ao apagar snapshot:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao apagar snapshot:', error);
+                    })
+                    .finally(() => {
+                        // Esconde o loading após a requisição, independentemente do resultado
+                        hideLoading();
+                    });
+            }
+
         });
-    } else {
-        console.error('Botão de atualização ou elemento de status não encontrado');
-    }
-});
+    </script>
 
-document.querySelectorAll('.delete-button').forEach(button => {
-    button.addEventListener('click', function(event) {
-        if (!confirm('Tem certeza que deseja remover este valor?')) {
-            event.preventDefault();
-        }
-    });
-});
-
-</script>
-    
-{% endblock %}
+    {% endblock %}

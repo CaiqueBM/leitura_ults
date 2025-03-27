@@ -1,10 +1,15 @@
 import sqlite3
 from datetime import datetime, timedelta
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
 
 
 def estimar():
     # Conectar ao banco de dados
-    conexao = sqlite3.connect('/home/abs/Aplicativos/leitura_ults/dados.db')
+    path_db = os.path.join(parent_dir, 'dados.sqlite')
+    conexao = sqlite3.connect(path_db)
     cursor = conexao.cursor()
 
     # Obter a data atual
@@ -35,6 +40,7 @@ def estimar():
             #dados_por_ult[f'ULT {ult}'] = [geracao[0] for geracao in geracoes]
             dados_por_ult[f'ULT {ult}'] = [geracao[0] for geracao in geracoes]
         # Fechar a conexão com o banco de dados
+        cursor.close()
         conexao.close()
     else:
         # Loop para buscar os dados por ULT
@@ -52,6 +58,7 @@ def estimar():
             #dados_por_ult[f'ULT {ult}'] = [geracao[0] for geracao in geracoes]
             dados_por_ult[f'ULT {ult}'] = [geracao[0] for geracao in geracoes]
         # Fechar a conexão com o banco de dados
+        cursor.close()
         conexao.close()
 
     # Dicionário para armazenar as médias de geração por ULT

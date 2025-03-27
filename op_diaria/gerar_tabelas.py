@@ -1,6 +1,10 @@
 import sqlite3
+import os
 
-caminhoDB = f"/home/abs/Aplicativos/leitura_ults/dados.db"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+caminhoDB = os.path.join(parent_dir, 'dados.sqlite')
+# caminhoDB = f"/media/hdfs/Softwares/leitura_ults/dados.sqlite"
 
 # Conexão com o banco de dados
 conn = sqlite3.connect(caminhoDB)
@@ -19,5 +23,6 @@ c.execute(
 )
 
 conn.commit()
+c.close()
 # Fechar a conexão
 conn.close()

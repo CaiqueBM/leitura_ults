@@ -2,10 +2,10 @@
 
 {% block content %}
     <h1>Selecione o ano e mês de referência</h1>
-    <form method="POST">
+    <form method="POST" class="form-custom">
         <div class="select-container"></div>
             <label for="ano">Ano:</label>
-            <select name="ano" id="ano" required>
+            <select name="ano" id="ano" required class="select-custom">
                 <option value="2025">2025</option>
                 <option value="2024">2024</option>
                 <option value="2023">2023</option>
@@ -14,7 +14,7 @@
         </div>
 
         <label for="mes">Mês:</label>
-        <select name="mes" id="mes" required>
+        <select name="mes" id="mes" required class="select-custom">
             <option value="01">Janeiro</option>
             <option value="02">Fevereiro</option>
             <option value="03">Março</option>
@@ -29,6 +29,6 @@
             <option value="12">Dezembro</option>
         </select><br>
 
-        <button type="submit" class="btn btn-confirm">Selecionar</button>
+        <button type="submit" class="btn btn-confirm-date">Selecionar</button>
     </form>
 {% endblock %}

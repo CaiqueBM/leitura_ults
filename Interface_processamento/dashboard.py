@@ -2,23 +2,11 @@ import sqlite3
 import configparser
 import requests
 import pandas as pd
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 config = configparser.ConfigParser()
 config.read(r"./config.ini")
-
-# def sanitize_json(obj):
-#     if isinstance(obj, dict):
-#         return {k: sanitize_json(v) for k, v in obj.items()}
-#     elif isinstance(obj, list):
-#         return [sanitize_json(v) for v in obj]
-#     elif isinstance(obj, float):
-#         return obj if math.isfinite(obj) else None  # Substitui valores inválidos
-#     return obj
-
-
-# query = f"SELECT MONTANTE
-#         FROM historico
-#         WHERE CAST(UNIDADE_EDP AS UNSIGNED) = '{unidade_edp}' AND MES_DE_CONSUMO = '{mes_consumo}';"
 
 def gerar_dashboard(unidade_edp, data_referencia):
     # Caminho para o banco de dados SQLite
@@ -71,40 +59,96 @@ def gerar_dashboard(unidade_edp, data_referencia):
                     panel['targets'][0]['rawQueryText'] = query
 
                 if panel['id'] == 3: # HISTORICO MENSAL
-                    ano = data_referencia.split("/")[1]
-                    data_inicio = f"01/{ano}"
-                    data_final = f"12/{ano}"
+                    partes = data_referencia.split("/")
+                    mes = int(partes[0])
+                    ano = int(partes[1])
                     
-                    query = f"""SELECT MES_DE_CONSUMO,
-                                    VALOR_FATURA
+                    # Criar objeto datetime para a data de referência
+                    data_ref = datetime(year=ano, month=mes, day=1)
+                    
+                    # Gerar os 4 meses separadamente
+                    data1 = data_ref  # Mês mais recente (mês de referência)
+                    data2 = data_ref - relativedelta(months=1)
+                    data3 = data_ref - relativedelta(months=2)
+                    data4 = data_ref - relativedelta(months=3)  # Mês mais antigo
+                    
+                    # Formatar as datas sem zero à esquerda
+                    mes1 = f"{data1.month}/{data1.year}"  # Mais recente
+                    mes2 = f"{data2.month}/{data2.year}"
+                    mes3 = f"{data3.month}/{data3.year}"
+                    mes4 = f"{data4.month}/{data4.year}"  # Mais antigo
+                    
+                    # Criar as cláusulas CASE separadamente
+                    case1 = f"WHEN '{mes1}' THEN 4"  # Valor 4 para o mais recente
+                    case2 = f"WHEN '{mes2}' THEN 3"
+                    case3 = f"WHEN '{mes3}' THEN 2"
+                    case4 = f"WHEN '{mes4}' THEN 1"  # Valor 1 para o mais antigo
+                    
+                    query = f"""SELECT MES_CONSUMO, VALOR_FATURA
                                 FROM historico
                                 WHERE
                                     UNIDADE_EDP = '{unidade_edp}' AND
-                                    MES_DE_CONSUMO BETWEEN '{data_inicio}' AND '{data_final}'
-                                ORDER BY MES_DE_CONSUMO ASC"""
+                                    MES_CONSUMO IN ('{mes1}', '{mes2}', '{mes3}', '{mes4}')
+                                ORDER BY CASE MES_CONSUMO
+                                    {case1}
+                                    {case2}
+                                    {case3}
+                                    {case4}
+                                    ELSE 0 END
+                                """
                     
                     panel['targets'][0]['queryText'] = query
                     panel['targets'][0]['rawQueryText'] = query
                     
                 if panel['id'] == 4: # ECONOMIA ACUMULADA
-                    ano = data_referencia.split("/")[1]
-                    data_inicio = f"01/{ano}"
-                    data_final = f"12/{ano}"
+                    partes = data_referencia.split("/")
+                    mes = int(partes[0])
+                    ano = int(partes[1])
+                    
+                    # Criar objeto datetime para a data de referência
+                    data_ref = datetime(year=ano, month=mes, day=1)
+                    
+                    # Gerar os 4 meses separadamente
+                    data1 = data_ref  # Mês mais recente (mês de referência)
+                    data2 = data_ref - relativedelta(months=1)
+                    data3 = data_ref - relativedelta(months=2)
+                    data4 = data_ref - relativedelta(months=3)  # Mês mais antigo
+                    
+                    # Formatar as datas sem zero à esquerda
+                    mes1 = f"{data1.month}/{data1.year}"  # Mais recente
+                    mes2 = f"{data2.month}/{data2.year}"
+                    mes3 = f"{data3.month}/{data3.year}"
+                    mes4 = f"{data4.month}/{data4.year}"  # Mais antigo
+                    
+                    # Criar as cláusulas CASE separadamente
+                    case1 = f"WHEN '{mes1}' THEN 4"  # Valor 4 para o mais recente
+                    case2 = f"WHEN '{mes2}' THEN 3"
+                    case3 = f"WHEN '{mes3}' THEN 2"
+                    case4 = f"WHEN '{mes4}' THEN 1"  # Valor 1 para o mais antigo
 
-                    query = f"""SELECT 
-                                    MES_DE_CONSUMO,
-                                    ECONOMIA_VALOR,
-                                    SUM(ECONOMIA_VALOR) OVER (
-                                        PARTITION BY UNIDADE_EDP
-                                        ORDER BY CAST(SUBSTR(MES_DE_CONSUMO, 4, 4) || '-' || SUBSTR(MES_DE_CONSUMO, 1, 2) AS TEXT)
-                                        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-                                    ) AS ECONOMIA_ACUMULADA
+                    query = f"""SELECT
+                                MES_CONSUMO,
+                                ECONOMIA_VALOR,
+                                SUM(ECONOMIA_VALOR) OVER (
+                                    PARTITION BY UNIDADE_EDP
+                                    ORDER BY CASE MES_CONSUMO
+                                        {case4}
+                                        {case3}
+                                        {case2}
+                                        {case1}
+                                        ELSE 0 END
+                                    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+                                ) AS ECONOMIA_ACUMULADA
                                 FROM historico
                                 WHERE
-                                    UNIDADE_EDP = '{unidade_edp}' AND 
-                                    MES_DE_CONSUMO BETWEEN '{data_inicio}' AND '{data_final}'
-                                ORDER BY 
-                                    CAST(SUBSTR(MES_DE_CONSUMO, 4, 4) || '-' || SUBSTR(MES_DE_CONSUMO, 1, 2) AS TEXT);
+                                    UNIDADE_EDP = '{unidade_edp}' AND
+                                    MES_CONSUMO IN ('{mes1}', '{mes2}', '{mes3}', '{mes4}')
+                                ORDER BY CASE MES_CONSUMO
+                                    {case4}
+                                    {case3}
+                                    {case2}
+                                    {case1}
+                                    ELSE 0 END
                                 """
                     panel['targets'][0]['queryText'] = query
                     panel['targets'][0]['rawQueryText'] = query

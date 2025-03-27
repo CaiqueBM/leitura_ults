@@ -32,7 +32,8 @@ header .logo {
     height: 50px;
     width: auto;
     margin-right: 20px;
-    filter: brightness(0) invert(1); /* Inverte as cores e aplica brilho */
+    filter: brightness(0) invert(1);
+    /* Inverte as cores e aplica brilho */
 }
 
 .back-button {
@@ -49,17 +50,20 @@ header .logo {
 }
 
 main {
-    padding: 20px 0; /* Remove padding lateral */
-    margin: 0; /* Remove margem */
-    width: 100%; /* Ocupa toda a largura */
+    padding: 20px 0;
+    /* Remove padding lateral */
+    margin: 0;
+    /* Remove margem */
+    width: 100%;
+    /* Ocupa toda a largura */
 }
 
 
 /* Table Styles */
 .client-table {
     width: 100%;
-    max-width: 800px; /* Ajuste o valor conforme necessário */
-    margin: 0 auto; /* Centraliza horizontalmente */
+    max-width: 800px;
+    margin: 0 auto;
     border-collapse: collapse;
     margin-top: 30px;
     background-color: white;
@@ -68,27 +72,46 @@ main {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.client-table th, .client-table td {
-    padding: 16px;
-    text-align: center; /* Centraliza horizontalmente */
-    vertical-align: middle; /* Centraliza verticalmente */
+.client-table th,
+.client-table td {
+    padding: 5px;
+    text-align: center;
+    vertical-align: middle;
     border-bottom: 1px solid #ddd;
 }
 
 .client-table th {
     background-color: #cfd0d3;
     font-weight: bold;
-    color: #333;
 }
 
 .client-table tr {
     background-color: #ffffff;
-    font-weight: bold;
-    color: #333;
 }
 
 .client-table tr:hover {
-    background-color: #f9f9f9;
+    background-color: #007bff59;
+}
+
+/* Classes de cor específicas para as células de nome do cliente */
+.client-table td.geradora-verde {
+    color: #44c52e;
+    font-weight: bold;
+}
+
+.client-table td.consumidora-faltando {
+    color: #808080ba;
+    font-weight: normal;
+}
+
+.client-table td.consumidora-fatura {
+    color: black;
+    font-weight: bold;
+}
+
+.client-table td.consumidora-concluida {
+    color: blue;
+    font-weight: bold;
 }
 
 .page-title {
@@ -109,12 +132,14 @@ main {
     justify-content: center;
     gap: 20px;
     margin-bottom: 30px;
-    vertical-align: middle; /* Centraliza verticalmente */
+    vertical-align: middle;
+    /* Centraliza verticalmente */
 }
 
 .btn {
     display: inline-block;
-    min-width: 200px;      /* Largura mínima para os botões */
+    min-width: 200px;
+    /* Largura mínima para os botões */
     padding: 10px;
     text-align: center;
     background-color: #007bff;
@@ -130,12 +155,13 @@ main {
 }
 
 .btn-details:hover {
-    background-color: #0056b3;
+    background-color: #13c358;
 }
 
 .btn-action {
     background-color: #004aad;
-    vertical-align: middle; /* Centraliza verticalmente */
+    vertical-align: middle;
+    /* Centraliza verticalmente */
 }
 
 .btn-action:hover {
@@ -149,8 +175,10 @@ main {
 }
 
 .btn-confirm {
-    display: inline-block;  /* Faz com que o link se comporte como um bloco */
-    width: 150px;           /* Definindo a largura fixa para todos os botões */
+    display: inline-block;
+    /* Faz com que o link se comporte como um bloco */
+    width: 150px;
+    /* Definindo a largura fixa para todos os botões */
     padding: 12px 25px;
     border: none;
     border-radius: 5px;
@@ -167,8 +195,10 @@ main {
 }
 
 .btn-review {
-    display: inline-block;  /* Faz com que o link se comporte como um bloco */
-    width: 150px;           /* Definindo a largura fixa para todos os botões */
+    display: inline-block;
+    /* Faz com que o link se comporte como um bloco */
+    width: 150px;
+    /* Definindo a largura fixa para todos os botões */
     padding: 12px 25px;
     border: none;
     border-radius: 5px;
@@ -229,10 +259,6 @@ main {
     flex-direction: column;
 }
 
-.select-container {
-    margin-bottom: 10px;
-}
-
 #iframe-select {
     width: 100%;
     padding: 10px;
@@ -265,7 +291,8 @@ iframe {
         padding: 10px;
     }
 
-    .iframe-wrapper, .iframe-content {
+    .iframe-wrapper,
+    .iframe-content {
         width: 100%;
         min-width: 100%;
     }
@@ -274,7 +301,7 @@ iframe {
 
 .btn {
     display: inline-block;
-    margin-top: 20px;
+    margin-top: 0px;
 }
 
 .logout-button {
@@ -296,34 +323,43 @@ iframe {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: #004aad; /* Cor de fundo da página */
+    background-color: #004aad;
+    /* Cor de fundo da página */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Altura total da tela */
+    height: 100vh;
+    /* Altura total da tela */
 }
 
 /* Logo no topo */
 header {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px; /* Espaçamento entre a logo e o container de login */
+    margin-bottom: 20px;
+    /* Espaçamento entre a logo e o container de login */
 }
 
 header .logo {
-    max-width: 150px; /* Define um tamanho máximo para a logo */
-    height: auto; /* Mantém a proporção da imagem */
+    max-width: 150px;
+    /* Define um tamanho máximo para a logo */
+    height: auto;
+    /* Mantém a proporção da imagem */
 }
 
 /* Estilo da caixa de login */
 .login-container {
     max-width: 600px;
     width: 100%;
-    background-color: #fff; /* Caixa branca */
-    padding: 40px; /* Espaçamento interno */
-    border-radius: 8px; /* Bordas arredondadas */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para destaque */
+    background-color: #fff;
+    /* Caixa branca */
+    padding: 40px;
+    /* Espaçamento interno */
+    border-radius: 8px;
+    /* Bordas arredondadas */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Sombra para destaque */
     text-align: center;
 }
 
@@ -365,42 +401,51 @@ header .logo {
 }
 
 .styled-table thead tr {
-    background-color: #004aad; /* Fundo azul no cabeçalho */
-    color: #ffffff; /* Texto branco no cabeçalho */
+    background-color: #004aad;
+    /* Fundo azul no cabeçalho */
+    color: #ffffff;
+    /* Texto branco no cabeçalho */
     text-align: center;
     font-weight: bold;
 }
 
 .styled-table th {
     padding: 12px 15px;
-    border-bottom: 2px solid #004aad; /* Borda inferior do cabeçalho */
+    border-bottom: 2px solid #004aad;
+    /* Borda inferior do cabeçalho */
 }
 
 .styled-table td {
     padding: 12px 15px;
-    border: 1px solid #dddddd; /* Bordas internas das células */
+    border: 1px solid #dddddd;
+    /* Bordas internas das células */
 }
 
 .styled-table tbody tr:nth-of-type(even) {
-    background-color: #f9f9f9; /* Fundo cinza claro nas linhas pares */
+    background-color: #f9f9f9;
+    /* Fundo cinza claro nas linhas pares */
 }
 
 .styled-table tbody tr:nth-of-type(odd) {
-    background-color: #ffffff; /* Fundo branco nas linhas ímpares */
+    background-color: #ffffff;
+    /* Fundo branco nas linhas ímpares */
 }
 
 .styled-table tbody tr:hover {
-    background-color: rgba(0, 74, 173, 0.1); /* Fundo azul claro no hover */
+    background-color: rgba(0, 74, 173, 0.1);
+    /* Fundo azul claro no hover */
     cursor: pointer;
 }
 
 /* Estilização do container do select */
 .select-container {
     margin: 20px 0;
+    margin-bottom: 10px;
     width: 100%;
     max-width: 300px;
     font-family: Arial, sans-serif;
 }
+
 
 /* Estilização do select com id=ano */
 #ano {
@@ -430,18 +475,21 @@ header .logo {
 }
 
 /* Hover no select */
-#ano:hover, #mes:hover {
+#ano:hover,
+#mes:hover {
     border-color: #3498db;
 }
 
 /* Foco no select */
-#ano:focus, #mes:focus {
+#ano:focus,
+#mes:focus {
     border-color: #2980b9;
     box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
 }
 
 /* Estilização dos options */
-#ano option, #mes option {
+#ano option,
+#mes option {
     padding: 10px;
     font-size: 16px;
     background-color: #fff;
@@ -450,19 +498,13 @@ header .logo {
 }
 
 /* Hover nos options */
-#ano option:hover, #mes option:hover {
+#ano option:hover,
+#mes option:hover {
     background-color: #f0f0f0;
     color: #2980b9;
 }
 
-/* Estilização do label */
-.select-container label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-}
+
 
 /* Estilização do select com id=ano */
 #allselect {
@@ -480,18 +522,15 @@ header .logo {
 
 
 
-
-
-
 .message-box {
     position: absolute;
-    top: 150px;
-    right: 20px;
+    top: 130px;
+    left: 20px;
     background-color: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     max-width: 300px;
 }
@@ -501,7 +540,8 @@ header .logo {
     margin-bottom: 10px;
     font-size: 18px;
     color: #333;
-    text-align: center; /* Garante que o título esteja centralizado */
+    text-align: center;
+    /* Garante que o título esteja centralizado */
 }
 
 .expandable-section {
@@ -528,13 +568,14 @@ header .logo {
 .expandable-content {
     display: none;
     padding: 10px 0;
-    text-align: center; /* Centraliza o conteúdo */
+    text-align: center;
+    /* Centraliza o conteúdo */
 
 }
 
 .expandable-content.show {
     display: block;
-    
+
 }
 
 .message-btn {
@@ -562,21 +603,23 @@ header .logo {
 
 
 .delete-button {
-    background-color:red;
+    background-color: red;
     color: white;
     border: none;
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
 }
+
 .delete-button:hover {
     background-color: darkred;
 }
 
 
-
+/* 
 .btn-economia {
     position: absolute;
+    width: 230px;
     top: 300px;
     right: 20px;
     background-color: #004aad;
@@ -591,4 +634,444 @@ header .logo {
 
 .btn-economia:hover {
     background-color: #003c8f;
+}
+
+
+.btn-simulador {
+    position: absolute;
+    width: 230px;
+    top: 250px;
+    right: 20px;
+    background-color: #004aad;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-simulador:hover {
+    background-color: #003c8f;
+}
+
+
+.btn-planilha-economia {
+    position: absolute;
+    width: 230px;
+    right: 20px;
+    background-color: #004aad;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    text-decoration: none;  /
+    text-align: center;    
+    display: inline-block;  
+    
+}
+
+.btn-planilha-economia:hover {
+    background-color: #003c8f;
+} */
+
+
+
+.flash-messages {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 20px 0;
+}
+
+.alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    position: relative;
+    max-width: 80%;
+    /* Ajuste conforme necessário */
+    min-width: 200px;
+    /* Ajuste conforme necessário */
+    text-align: center;
+    display: inline-block;
+    /* Garante que o tamanho se ajuste ao conteúdo */
+}
+
+.alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.alert-info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+.alert-warning {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+}
+
+.close-btn {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.4em;
+    cursor: pointer;
+}
+
+
+
+
+
+/* Container do simulador */
+#simulacao-input {
+    position: absolute;
+    top: 25%;
+    right: 5%;
+    transform: translate(-50%, -50%);
+    /* display: flex; */
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+}
+
+/* Estilo dos inputs */
+#simulacao-input input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+#simulacao-input input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.2);
+}
+
+#simulacao-input input::placeholder {
+    color: #999;
+}
+
+/* Container dos botões */
+#simulacao-input .botoes-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+/* Estilo dos botões */
+#simulacao-input button {
+    left: 50%;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+#btn-enviar-simulacao,
+#btn-enviar-simulacao-fatura {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#btn-enviar-simulacao:hover,
+#btn-enviar-simulacao-fatura {
+    background-color: #45a049;
+}
+
+#btn-cancelar-simulacao,
+#btn-cancelar-simulacao-fatura {
+    background-color: #f44336;
+    color: white;
+}
+
+#btn-cancelar-simulacao:hover,
+#btn-cancelar-simulacao-fatura {
+    background-color: #da190b;
+}
+
+/* Mensagens de erro */
+.erro-mensagem {
+    color: #f44336;
+    font-size: 12px;
+    margin-top: 4px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    #simulacao-input {
+        max-width: 100%;
+        margin: 10px 0;
+    }
+
+    #simulacao-input button {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+/* Estado desabilitado dos botões */
+#simulacao-input button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Estado de foco dos botões */
+#simulacao-input button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.4);
+}
+
+/* Estilo quando houver erro */
+#simulacao-input input.error {
+    border-color: #f44336;
+    background-color: #fff8f8;
+}
+
+.btn-economia,
+.btn-simulador,
+.btn-gerar-fat-simulacao,
+.btn-planilha-economia,
+.btn-att-db {
+    position: absolute;
+    width: 230px;
+    right: 20px;
+    background-color: #004aad;
+    color: white;
+    border: none;
+    padding: 0;
+    /* Removemos o padding aqui */
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+    display: flex;
+    /* Mudamos para flex */
+    align-items: center;
+    /* Centralizamos verticalmente */
+    justify-content: center;
+    /* Centralizamos horizontalmente */
+    box-sizing: border-box;
+    height: 45px;
+    /* Altura fixa para todos os botões */
+    line-height: 1;
+    /* Reseta a linha de altura */
+}
+
+.btn-economia:hover,
+.btn-simulador:hover,
+.btn-gerar-fat-simulacao:hover,
+.btn-planilha-economia:hover,
+.btn-att-db:hover {
+    background-color: #13c358;
+}
+
+.btn-economia {
+    top: 300px;
+}
+
+.btn-gerar-fat-simulacao {
+    top: 250px;
+}
+
+.btn-simulador {
+    top: 200px;
+}
+
+.btn-planilha-economia {
+    top: 150px;
+}
+
+.btn-att-db {
+    top: 365px;
+    left: 550px;
+}
+
+/* Estilos específicos para garantir que <a> se comporte como <button> */
+.btn-planilha-economia {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    white-space: nowrap;
+    margin: 0;
+}
+
+/* Estilo adicional para garantir que o texto dentro do <a> fique centralizado */
+.btn-planilha-economia span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+    height: 90%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner p {
+    margin: 0;
+    color: #333;
+    font-weight: bold;
+}
+
+
+.valor-zero-diferenca {
+    color: green;
+}
+.valor-negativo-diferenca {
+    color: red;
+}
+.valor-positivo-diferenca {
+    color: black; /* ou qualquer outra cor desejada */
+}
+
+/* Estilização do formulário */
+.form-custom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+/* Estilização dos selects */
+.select-custom {
+    width: 200px;
+    padding: 8px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Estilização do título */
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Estilização do botão */
+.btn-confirm-date {
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #004aad;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-confirm-date:hover {
+    background-color: #005bb5;
 }

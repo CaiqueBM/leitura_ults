@@ -3,24 +3,28 @@
 {% block content %}
 
 <h2 class="page-title">Lista de Clientes</h2>
+<h2 class="page-title">Data Referência: {{ data }}</h2>
 <table class="client-table">
     <thead>
         <tr>
             <th>Nome do Cliente</th>
-            <th>Status</th>
             <th>Ações</th>
         </tr>
     </thead>
     <tbody>
         {% for client in clients %}
         <tr>
-            <td>{{ client[0] }}</td>
-            <td></td>
-            <td>{{ client[1] }}
+            <td class="{{ client[5] }}">{% if client[4] == "1" %}
+                {{ client[0] }} - {{ client[1] }}
+                {% else %}
+                {{ client[0] }}
+                {% endif %}</td>
+            <td>
                 <a href="{{ url_for('client_detail', client_id=client[0]) }}" class="btn btn-details">Detalhes</a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
 {% endblock %}
